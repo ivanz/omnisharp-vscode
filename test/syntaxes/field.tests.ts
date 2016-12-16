@@ -128,6 +128,28 @@ public class Tester
             tokens.should.contain(Tokens.FieldIdentifier("field", 5, 20));
             tokens.should.contain(Tokens.LanguageConstant("true", 5, 29));
         });
+
+        it("multi-line expression body", function() {
+
+const input = `
+public class Tester
+{
+    Delegate field => () = {
+    }
+
+    Delegate field => () =
+    {
+    }
+}`;
+
+            let tokens: Token[] = TokenizerUtil.tokenize(input);
+
+            tokens.should.contain(Tokens.Type("Delegate", 4, 5));
+            tokens.should.contain(Tokens.FieldIdentifier("field", 4, 14));
+
+            tokens.should.contain(Tokens.Type("Delegate", 7, 5));
+            tokens.should.contain(Tokens.FieldIdentifier("field", 7, 14));
+        });
     });
 });
 
