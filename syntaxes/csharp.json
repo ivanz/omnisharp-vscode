@@ -11,10 +11,19 @@
       "include": "#using"
     },
     {
-      "include": "#namespace"
+      "include": "#namespace-declaration"
     },
     {
-      "include": "#code"
+      "include": "#type-declaration"
+    },
+    {
+      "include": "#attribute"
+    },
+    {
+      "include": "#comments"
+    },
+    {
+      "include": "#preprocessor"
     }
   ],
   "repository": {
@@ -27,7 +36,7 @@
       },
       "end": "\\s*(?:$|;)"
     },
-    "namespace": {
+    "namespace-declaration": {
       "begin": "^\\s*[^@]?((namespace)\\s+([\\w.]+))",
       "beginCaptures": {
         "1": {
@@ -62,10 +71,19 @@
               "include": "#using"
             },
             {
-              "include": "#namespace"
+              "include": "#namespace-declaration"
             },
             {
-              "include": "#code"
+              "include": "#type-declaration"
+            },
+            {
+              "include": "#attribute"
+            },
+            {
+              "include": "#comments"
+            },
+            {
+              "include": "#preprocessor"
             }
           ]
         }
@@ -289,7 +307,7 @@
     "type-body": {
       "patterns": [
         {
-          "include": "type-declaration"
+          "include": "#type-declaration"
         },
         {
           "include": "#field-declaration"
@@ -298,13 +316,22 @@
           "include": "#property-declaration"
         },
         {
-          "include": "#method"
+          "include": "#method-declaration"
+        },
+        {
+          "include": "#attribute"
+        },
+        {
+          "include": "#comments"
         },
         {
           "include": "#storage-modifiers"
         },
         {
-          "include": "#code"
+          "include": "#preprocessor"
+        },
+        {
+          "include": "#block"
         }
       ]
     },
@@ -314,10 +341,10 @@
           "include": "#block"
         },
         {
-          "include": "#comments"
+          "include": "#keywords"
         },
         {
-          "include": "#type-declaration"
+          "include": "#comments"
         },
         {
           "include": "#variable"
@@ -329,9 +356,6 @@
           "include": "#storage-modifiers"
         },
         {
-          "include": "#keywords"
-        },
-        {
           "include": "#preprocessor"
         },
         {
@@ -341,7 +365,7 @@
           "include": "#builtinTypes"
         },
         {
-          "include": "#documentation"
+          "include": "#new-object-instantiation"
         }
       ]
     },
@@ -599,23 +623,23 @@
       "begin": "^\\s*(?!.*\\b(?:class|interface|struct)\\b)((?:\\w+\\s+)*?)(?!(?:private|public|internal|protected|static|new|virtual|override))(\\w.+?)\\s+(\\w+)\\s*(?={|$)",
       "end": "}|;|$",
       "beginCaptures": {
-          "1" : {
-              "patterns": [
-                {
-                  "include": "#storage-modifiers"
-                }
-              ]
-            },
-            "2" : {
-              "patterns": [
-                {
-                  "include": "#type"
-                }
-              ]
-            },
-            "3": {
-              "name": "entity.name.function.cs"
-            }
+        "1": {
+            "patterns": [
+              {
+                "include": "#storage-modifiers"
+              }
+            ]
+          },
+          "2": {
+            "patterns": [
+              {
+                "include": "#type"
+              }
+            ]
+          },
+          "3": {
+            "name": "entity.name.function.cs"
+          }
       },
       "name": "meta.property.cs",
       "patterns": [
@@ -633,15 +657,77 @@
         }
       ]
     },
-    "method": {
+    "method-declaration": {
+      "begin": "(?<!=|=\\s)(?!new)(?!.*(=|\\/\\/|\\/\\*).*\\()(?=[\\w<].*\\s+.+\\()",
+      "end": "(})|(?=;)",
+      "endCaptures": {
+        "1": {
+          "name": "punctuation.section.method.end.cs"
+        }
+      },
+      "name": "meta.method.cs",
       "patterns": [
         {
-          "include": "attribute"
+          "include": "#storage-modifiers"
         },
         {
-          "begin": "(?=\\bnew\\s+)(?=[\\w<].*\\s+)(?=[^=]+\\()",
-          "end": "(?={|;)",
-          "name": "meta.new-object.cs",
+          "begin": "([\\w]+\\s*(?:<[\\w<>\\s,`?]*>)?)\\s*\\(",
+          "beginCaptures": {
+            "1": {
+              "name": "entity.name.function.cs"
+            }
+          },
+          "end": "\\)",
+          "name": "meta.method.identifier.cs",
+          "patterns": [
+            {
+              "include": "#parameters"
+            },
+            {
+              "include": "#constants"
+            },
+            {
+              "include": "#comments"
+            }
+          ]
+        },
+        {
+          "begin": "(?=\\w.*\\s+[\\w.]+\\s*\\()",
+          "end": "(?=[\\w.]+\\s*\\()",
+          "name": "meta.method.return-type.cs",
+          "patterns": [
+            {
+              "include": "#builtinTypes"
+            }
+          ]
+        },
+        {
+          "begin": ":\\s*(this|base)\\s*\\(",
+          "beginCaptures": {
+            "1": {
+              "name": "constant.language.cs"
+            }
+          },
+          "end": "\\)",
+          "name": "meta.method.base-call.cs",
+          "patterns": [
+            {
+              "include": "#builtinTypes"
+            }
+          ]
+        },
+        {
+          "include": "#comments"
+        },
+        {
+          "begin": "=>",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.section.method.begin.cs"
+            }
+          },
+          "end": "(?=;)",
+          "name": "meta.method.body.cs",
           "patterns": [
             {
               "include": "#code"
@@ -649,92 +735,29 @@
           ]
         },
         {
-          "begin": "(?<!=|=\\s)(?!new)(?!.*(=|\\/\\/|\\/\\*).*\\()(?=[\\w<].*\\s+.+\\()",
-          "end": "(})|(?=;)",
-          "endCaptures": {
-            "1": {
-              "name": "punctuation.section.method.end.cs"
+          "begin": "{",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.section.method.begin.cs"
             }
           },
-          "name": "meta.method.cs",
+          "end": "(?=})",
+          "name": "meta.method.body.cs",
           "patterns": [
             {
-              "include": "#storage-modifiers"
-            },
-            {
-              "begin": "([\\w]+\\s*(?:<[\\w<>\\s,`?]*>)?)\\s*\\(",
-              "beginCaptures": {
-                "1": {
-                  "name": "entity.name.function.cs"
-                }
-              },
-              "end": "\\)",
-              "name": "meta.method.identifier.cs",
-              "patterns": [
-                {
-                  "include": "#parameters"
-                },
-                {
-                  "include": "#constants"
-                }
-              ]
-            },
-            {
-              "begin": "(?=\\w.*\\s+[\\w.]+\\s*\\()",
-              "end": "(?=[\\w.]+\\s*\\()",
-              "name": "meta.method.return-type.cs",
-              "patterns": [
-                {
-                  "include": "#builtinTypes"
-                }
-              ]
-            },
-            {
-              "begin": ":\\s*(this|base)\\s*\\(",
-              "beginCaptures": {
-                "1": {
-                  "name": "constant.language.cs"
-                }
-              },
-              "end": "\\)",
-              "name": "meta.method.base-call.cs",
-              "patterns": [
-                {
-                  "include": "#builtinTypes"
-                }
-              ]
-            },
-            {
-              "begin": "=>",
-              "beginCaptures": {
-                "0": {
-                  "name": "punctuation.section.method.begin.cs"
-                }
-              },
-              "end": "(?=;)",
-              "name": "meta.method.body.cs",
-              "patterns": [
-                {
-                  "include": "#code"
-                }
-              ]
-            },
-            {
-              "begin": "{",
-              "beginCaptures": {
-                "0": {
-                  "name": "punctuation.section.method.begin.cs"
-                }
-              },
-              "end": "(?=})",
-              "name": "meta.method.body.cs",
-              "patterns": [
-                {
-                  "include": "#code"
-                }
-              ]
+              "include": "#code"
             }
           ]
+        }
+      ]
+    },
+    "new-object-instantiation": {
+      "begin": "(?=\\bnew\\s+)(?=[\\w<].*\\s+)(?=[^=]+\\()",
+      "end": "(?={|;)",
+      "name": "meta.new-object.cs",
+      "patterns": [
+        {
+          "include": "#code"
         }
       ]
     },

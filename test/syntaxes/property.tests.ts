@@ -125,7 +125,7 @@ class Tester
             tokens.should.contain(Tokens.Type("Dictionary<string, List<T>[]>", 4, 12));
             tokens.should.contain(Tokens.PropertyIdentifier("Property", 4, 42));
             tokens.should.contain(Tokens.Keyword("get", 4, 53));
-            tokens.should.contain(Tokens.StorageModifierKeyword("new", 4, 62));
+            tokens.should.contain(Tokens.Keyword("new", 4, 62));
         });
     });
 });
