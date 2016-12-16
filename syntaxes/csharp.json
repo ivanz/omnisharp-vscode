@@ -141,7 +141,7 @@
           }
         },
         {
-          "match": "^\\s*\\b(?!var|return|yield|throw)([\\w<>*?\\[\\]]+)\\s+([\\w]+)\\s*(?=(=(?!=)|;))",
+          "match": "^\\s*\\b(?!var|return|yield|throw|private|public|internal|protected)([\\w<>*?\\[\\]]+)\\s+([\\w]+)\\s*(?=(=(?!=)|;))",
           "captures": {
             "1": {
               "name": "storage.type.variable.cs"
