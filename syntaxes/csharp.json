@@ -548,7 +548,7 @@
           "name": "constant.language.cs"
         },
         {
-          "match": "\\b((0(x|X)[0-9a-fA-F]*)|(([0-9]+\\.?[0-9]*)|(\\.[0-9]+))((e|E)(\\+|-)?[0-9]+)?)(L|l|UL|ul|u|U|F|f|ll|LL|ull|ULL)?\\b",
+          "match": "\\b((0(x|X)[0-9a-fA-F]*)|(([0-9]+\\.?[0-9]*)|(\\.[0-9]+))((e|E)(\\+|-)?[0-9]+)?)(?i:f|d|m|u|l|ul|lu)?\\b",
           "name": "constant.numeric.cs"
         },
         {
@@ -589,6 +589,9 @@
         },
         {
           "include": "#builtinTypes"
+        },
+        {
+          "include": "#comments"
         }
       ]
     },
@@ -797,11 +800,14 @@
       "patterns": [
         {
           "captures": {
-            "2": {
-              "name": "entity.name.function.preprocessor.cs"
+            "1": {
+              "name": "meta.directive.preprocessor.cs"
+            },
+            "3": {
+              "name": "entity.name.preprocessor.cs"
             }
           },
-          "match": "^\\s*#\\s*(if|else|elif|endif|define|undef|warning|error|line|pragma|region|endregion)\\b\\s*(.*?)(?=$|\\/\\/)",
+          "match": "^\\s*(#\\s*(if|else|elif|endif|define|undef|warning|error|line|pragma|region|endregion))\\b\\s*(.*?)(?=$|\\/\\/)",
           "name": "meta.preprocessor.cs"
         }
       ]
